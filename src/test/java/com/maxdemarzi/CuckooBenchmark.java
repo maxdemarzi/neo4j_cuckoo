@@ -120,8 +120,7 @@ public class CuckooBenchmark {
             Node n1 = db.findNode(Labels.User, "username", "user" + String.valueOf(n1Id));
             Node n2 = db.findNode(Labels.User, "username", "user" + String.valueOf(n2Id));
 
-            boolean found = CuckooFilters.get("FOLLOWS", n1.getId(), n2.getId());
-            if(found) {
+            if(CuckooFilters.get("FOLLOWS", n1.getId(), n2.getId())) {
                 if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.OUTGOING)) {
                     for (Relationship r1 : n1.getRelationships(Direction.OUTGOING, FOLLOWS)) {
                         if (r1.getEndNodeId() == n2Id) {
@@ -135,8 +134,8 @@ public class CuckooBenchmark {
                         }
                     }
                 }
-                tx.success();
             }
+            tx.success();
         }
         return false;
     }
