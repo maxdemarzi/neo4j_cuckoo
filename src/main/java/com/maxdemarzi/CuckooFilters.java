@@ -21,7 +21,7 @@ public class CuckooFilters {
         if (filters.containsKey(name)) {
             filters.get(name).put(Util.longsToBytes(from, to));
         } else {
-            CuckooFilter<byte[]> ck = new CuckooFilter.Builder<>(Funnels.byteArrayFunnel(), 2_000_000).build();
+            CuckooFilter<byte[]> ck = new CuckooFilter.Builder<>(Funnels.byteArrayFunnel(), 200_000_000).build();
             ck.put(Util.longsToBytes(from, to));
             filters.put(name, ck);
         }
@@ -33,4 +33,27 @@ public class CuckooFilters {
         }
     }
 
+    public static boolean get(String name, String key) {
+        if (filters.containsKey(name)) {
+            return filters.get(name).mightContain(key.getBytes());
+        } else {
+            return false;
+        }
+    }
+
+    public static void set(String name, String key) {
+        if (filters.containsKey(name)) {
+            filters.get(name).put(key.getBytes());
+        } else {
+            CuckooFilter<byte[]> ck = new CuckooFilter.Builder<>(Funnels.byteArrayFunnel(), 200_000_000).build();
+            ck.put(key.getBytes());
+            filters.put(name, ck);
+        }
+    }
+
+    public static void unset(String name, String key) {
+        if (filters.containsKey(name)) {
+            filters.get(name).delete(key.getBytes());
+        }
+    }
 }

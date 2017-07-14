@@ -29,6 +29,11 @@ public class MyTransactionEventHandler implements TransactionEventHandler {
                         relationship.getStartNode().getId(),
                         relationship.getEndNode().getId()
                 );
+                CuckooFilters.set(
+                        relationship.getType().name(),
+                        relationship.getStartNode().getProperty("username")
+                                + "-"
+                                + relationship.getEndNode().getProperty("username"));
             }
 
             for (Relationship relationship : td.deletedRelationships()) {
@@ -36,6 +41,11 @@ public class MyTransactionEventHandler implements TransactionEventHandler {
                         relationship.getType().name(),
                         relationship.getStartNode().getId(),
                         relationship.getEndNode().getId());
+                CuckooFilters.unset(
+                        relationship.getType().name(),
+                        relationship.getStartNode().getProperty("username")
+                                + "-"
+                                + relationship.getEndNode().getProperty("username"));
             }
             tx.success();
         }
