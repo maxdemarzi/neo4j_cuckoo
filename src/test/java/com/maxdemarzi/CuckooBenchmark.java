@@ -64,6 +64,12 @@ public class CuckooBenchmark {
         } finally {
             tx.close();
         }
+
+        try (Transaction tx2 = db.beginTx()) {
+            db.schema().constraintFor(Labels.User).assertPropertyIsUnique("username");
+            db.schema().awaitIndexesOnline(20, TimeUnit.SECONDS);
+            tx2.success();
+        }
     }
 
     private Node createUser(GraphDatabaseService db, String value) {
@@ -77,7 +83,7 @@ public class CuckooBenchmark {
         try(Transaction tx = db.beginTx()) {
             Node n1 = db.getNodeById(n1Id);
             Node n2 = db.getNodeById(n2Id);
-            if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.OUTGOING)) {
+            if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.INCOMING)) {
                 for (Relationship r1 : n1.getRelationships(Direction.OUTGOING, FOLLOWS)) {
                     if (r1.getEndNode().equals(n2)) {
                         return true;
@@ -142,7 +148,7 @@ public class CuckooBenchmark {
             Node n2 = db.findNode(Labels.User, "username", "user" + n2Id);
 
             if(CuckooFilters.get("FOLLOWS", n1.getId(), n2.getId())) {
-                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.OUTGOING)) {
+                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.INCOMING)) {
                     for (Relationship r1 : n1.getRelationships(Direction.OUTGOING, FOLLOWS)) {
                         if (r1.getEndNode() == n2) {
                             return true;
@@ -176,7 +182,7 @@ public class CuckooBenchmark {
             Node n1 = db.findNode(Labels.User, "username", "user" + n1Id);
             Node n2 = db.findNode(Labels.User, "username", "user" + n2Id);
 
-            if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.OUTGOING)) {
+            if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.INCOMING)) {
                 for (Relationship r1 : n1.getRelationships(Direction.OUTGOING, FOLLOWS)) {
                     if (r1.getEndNode() == n2) {
                         return true;
@@ -210,7 +216,7 @@ public class CuckooBenchmark {
                 Node n1 = db.findNode(Labels.User, "username",  "user" + n1Id);
                 Node n2 = db.findNode(Labels.User, "username",  "user" + n2Id);
 
-                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.OUTGOING)) {
+                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.INCOMING)) {
                     for (Relationship r1 : n1.getRelationships(Direction.OUTGOING, FOLLOWS)) {
                         if (r1.getEndNode() == n2) {
                             return true;
@@ -246,7 +252,7 @@ public class CuckooBenchmark {
             Node n2 = db.getNodeById(cache.get("user" + n2Id));
 
             if(CuckooFilters.get("FOLLOWS", n1.getId(), n2.getId())) {
-                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.OUTGOING)) {
+                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.INCOMING)) {
                     for (Relationship r1 : n1.getRelationships(Direction.OUTGOING, FOLLOWS)) {
                         if (r1.getEndNode() == n2) {
                             return true;
@@ -281,7 +287,7 @@ public class CuckooBenchmark {
                 Node n1 = db.getNodeById(cache.get("user" + n1Id));
                 Node n2 = db.getNodeById(cache.get("user" + n2Id));
 
-                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.OUTGOING)) {
+                if (n1.getDegree(FOLLOWS, Direction.OUTGOING) < n2.getDegree(FOLLOWS, Direction.INCOMING)) {
                     for (Relationship r1 : n1.getRelationships(Direction.OUTGOING, FOLLOWS)) {
                         if (r1.getEndNode() == n2) {
                             return true;
